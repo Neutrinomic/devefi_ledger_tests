@@ -15,7 +15,7 @@ import Debug "mo:base/Debug";
 
 actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
 
-    
+    Debug.print("basic.test.mo");
     private func test_subaccount(n:Nat64) : ?Blob {
         ?Blob.fromArray(Iter.toArray(I.pad<Nat8>( Iter.fromArray(ENat64(n)), 32, 0 : Nat8)));
     };
@@ -36,7 +36,7 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
     stable var next_subaccount_id:Nat64 = 100000;
 
     stable let lmem = L.Mem.Ledger.V1.new();
-    stable let lmem_icp = L2.Mem.Ledger.V1.new();
+    stable let lmem_icp = L2.Mem.Ledger.V2.new();
 
 
     let ledger = switch(ledger_type) {
@@ -50,11 +50,15 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
         if (t.to.subaccount == null) {
             // we will split into 1,000 subaccounts
             var i = 1;
+            Debug.print("t.amount " # debug_show(t.amount));
             label sending loop {
                 let amount = t.amount / 10000; // Each account gets 1/10000
                 // Debug.print(">>>" # debug_show(amount));
-
-                ignore ledger.send({ to = {owner=ledger.me(); subaccount=test_subaccount(Nat64.fromNat(i))}; amount; from_subaccount = t.to.subaccount; memo = null; });
+                if (amount <= 10000) {
+                    Debug.print("amount <= 10000");
+                    break sending;
+                };
+                ignore ledger.send({ to = #icrc({owner=ledger.me(); subaccount=test_subaccount(Nat64.fromNat(i))}); amount; from_subaccount = t.to.subaccount; memo = null; });
                 ledger.registerSubaccount(test_subaccount(Nat64.fromNat(i)));
                 i += 1;
                 if (i >= 1_001) break sending;
@@ -64,7 +68,7 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
             // we will pass half to another subaccount
             if (t.amount/10 < ledger.getFee() ) return; // if we send that it will be removed from our balance but won't register
             // Debug.print(debug_show(t.amount/10));
-            ignore ledger.send({ to = {owner=ledger.me(); subaccount=test_subaccount(next_subaccount_id)}; amount = t.amount / 10 ; from_subaccount = t.to.subaccount; memo = null; });
+            ignore ledger.send({ to = #icrc({owner=ledger.me(); subaccount=test_subaccount(next_subaccount_id)}); amount = t.amount / 10 ; from_subaccount = t.to.subaccount; memo = null; });
             ledger.registerSubaccount(test_subaccount(next_subaccount_id));
             next_subaccount_id += 1;
             

@@ -304,7 +304,7 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@dfinity/agent@*", "@dfinity/agent@^1.0.0", "@dfinity/agent@^2.3.0", "@dfinity/agent@^2.4.1":
+"@dfinity/agent@*", "@dfinity/agent@^1.0.0", "@dfinity/agent@^2.0.0", "@dfinity/agent@^2.3.0", "@dfinity/agent@^2.4.1":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@dfinity/agent/-/agent-1.0.0.tgz"
   integrity sha512-PdU3uDEacgAZUJTAlwqGkXjFT74u+BSiD7G6fk0QR/iIc6ynsws7nEf7PbNYhZVaf0e3IYrltk4d1XkOHP3KCw==
@@ -323,7 +323,7 @@
   dependencies:
     idb "^7.0.2"
 
-"@dfinity/candid@*", "@dfinity/candid@^1.0.0", "@dfinity/candid@^2.3.0":
+"@dfinity/candid@*", "@dfinity/candid@^1.0.0", "@dfinity/candid@^2.0.0", "@dfinity/candid@^2.3.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@dfinity/candid/-/candid-1.0.0.tgz"
   integrity sha512-xZss8Q+oZT3xptBkTskeXCRIC5HiC8VTxWNEK/U9vyZQmzcwVqAxu+mlLwMKeDFzHw6lo8cqIY6r8BCE6APs1g==
@@ -337,6 +337,11 @@
     "@noble/hashes" "^1.3.1"
     borc "^2.1.1"
 
+"@dfinity/ledger-icp@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@dfinity/ledger-icp/-/ledger-icp-4.0.0.tgz"
+  integrity sha512-qS5MZu3O9wUpuff9guneqXBlaCdywrvRBQwbkZaPjhcm9zPdmfERgHDQQZQyO7twVMkQeGdgWQpwKR+gn1cSbw==
+
 "@dfinity/pic@^0.13.1":
   version "0.13.1"
   resolved "https://registry.npmjs.org/@dfinity/pic/-/pic-0.13.1.tgz"
@@ -344,12 +349,17 @@
   dependencies:
     bip39 "^3.1.0"
 
-"@dfinity/principal@*", "@dfinity/principal@^1.0.0", "@dfinity/principal@^2.3.0", "@dfinity/principal@^2.4.1":
+"@dfinity/principal@*", "@dfinity/principal@^1.0.0", "@dfinity/principal@^2.0.0", "@dfinity/principal@^2.3.0", "@dfinity/principal@^2.4.1":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@dfinity/principal/-/principal-1.0.0.tgz"
   integrity sha512-lLX/EcrFbmyY/C1kDZhDeN3ebyG4PmBo8OkWP1hwpnp0BxAhv+5BEuFmK+PhH1T7tf6dtzmXOc5abWnPkzFbHQ==
   dependencies:
     "@noble/hashes" "^1.3.1"
+
+"@dfinity/utils@^2.13.0":
+  version "2.13.2"
+  resolved "https://registry.npmjs.org/@dfinity/utils/-/utils-2.13.2.tgz"
+  integrity sha512-D9Gkvtj59NQavSClOJjr7xp5cBEahK4ekrTFCFKfdm51V7HHbOnoyTx5vjcWg5x4vdi9dRD6EtEO9UoCp3b7gQ==
 
 "@infu/icblast@^2.0.46":
   version "2.0.46"

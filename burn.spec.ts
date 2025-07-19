@@ -3,7 +3,7 @@ import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
-import { toState, CanBurn, BurnService, ICRCLedgerService, ICRCLedger} from './common';
+import { toState, CanBurn, BurnService, ICRCLedgerService, Ledger, realICPLedger, ICPLedgerService} from './common';
 
 
 
@@ -14,6 +14,7 @@ describe('burn', () => {
     let ledger: Actor<ICRCLedgerService>;
     let userCanisterId: Principal;
     let ledgerCanisterId: Principal;
+    let ICPLedger: Actor<ICPLedgerService>;
 
     const jo = createIdentity('superSecretAlicePassword');
     const bob = createIdentity('superSecretBobPassword');
@@ -25,7 +26,7 @@ describe('burn', () => {
       pic = await PocketIc.create(process.env.PIC_URL);
   
       // Ledger
-      const ledgerfixture = await ICRCLedger(pic, jo.getPrincipal(), undefined);
+      const ledgerfixture = await Ledger(pic, jo.getPrincipal());
       ledger = ledgerfixture.actor;
       ledgerCanisterId = ledgerfixture.canisterId;
       
@@ -36,6 +37,9 @@ describe('burn', () => {
 
       ledger.setPrincipal(jo.getPrincipal());
       await passTime(50);
+
+
+     
 
     });
   

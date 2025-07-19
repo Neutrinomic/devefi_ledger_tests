@@ -2,7 +2,7 @@ import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
-import { toState, BurnService, CanBurn, ICRCLedgerService, ICRCLedger } from './common';
+import { toState, BurnService, CanBurn, ICRCLedgerService, ICRCLedger , Ledger, LEDGER_TYPE} from './common';
 
 
 
@@ -26,7 +26,7 @@ describe('Mint', () => {
 
 
         // Ledger
-        const ledgerfixture = await ICRCLedger(pic, userCanisterId, undefined );
+        const ledgerfixture = await Ledger(pic, userCanisterId );
         ledger = ledgerfixture.actor;
         ledgerCanisterId = ledgerfixture.canisterId;
 
@@ -43,6 +43,8 @@ describe('Mint', () => {
       await pic.tearDown();
     });
   
+    if (LEDGER_TYPE == "icrc") {
+
     it(`Check if canister is the minter`, async () => {
         let resp = await ledger.icrc1_minting_account();
         expect(resp[0].owner.toText()).toBe(userCanisterId.toText());
@@ -140,6 +142,9 @@ describe('Mint', () => {
 
           expect(resp3.transactions[1].mint[0].amount).toBe(1n);
     });
+  } else {
+    it(`ICP ledger middleware has no mint functionality`, async () => { });
+  }
 
     async function passTime(n:number) {
       for (let i=0; i<n; i++) {

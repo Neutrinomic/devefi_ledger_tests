@@ -3,14 +3,14 @@ import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
 
-import { toState, CanBasic, BasicService, ICRCLedgerService, ICRCLedger} from './common';
+import { toState, CanBasic, BasicService, Ledger, LedgerService} from './common';
 
 
 
 describe('Counter', () => {
     let pic: PocketIc;
     let user: Actor<BasicService>;
-    let ledger: Actor<ICRCLedgerService>;
+    let ledger: Actor<LedgerService>;
     let userCanisterId: Principal;
     let ledgerCanisterId: Principal;
 
@@ -24,9 +24,9 @@ describe('Counter', () => {
       pic = await PocketIc.create(process.env.PIC_URL);
   
       // Ledger
-      const ledgerfixture = await ICRCLedger(pic, jo.getPrincipal(), undefined );
-      ledger = ledgerfixture.actor;
-      ledgerCanisterId = ledgerfixture.canisterId;
+      const ledger_fixture = await Ledger(pic, jo.getPrincipal());
+      ledger = ledger_fixture.actor as Actor<LedgerService>;
+      ledgerCanisterId = ledger_fixture.canisterId;
       
       // Ledger User
       const fixture = await CanBasic(pic, ledgerCanisterId);
@@ -116,7 +116,8 @@ describe('Counter', () => {
 
     it('Compare user balances to snapshot', async () => {
       let accounts = await user.accounts();
-      expect(toState(accounts)).toMatchSnapshot()
+      let f = accounts.map(x => x[1]).sort((a, b) => Number(a) - Number(b));
+      expect(toState(f)).toMatchSnapshot()
     });
 
     

@@ -6,6 +6,8 @@
   "scripts": {
     "test": "./build.sh && LEDGER_TYPE=icrc jest -c ./jest.config.ts",
     "test-icp": "./build.sh && LEDGER_TYPE=icp jest -c ./jest.config.ts",
+    "testw-icp": "LEDGER_TYPE=icp jest -c ./jest.config.ts",
+
     "test-motoko": "./build.sh && LEDGER_TYPE=icrc LEDGER=motoko jest -c ./jest.config.ts",
     "testw": "LEDGER_TYPE=icrc jest -c ./jest.config.ts"
   },
@@ -13,6 +15,7 @@
     "@dfinity/agent": "^1.0.0",
     "@dfinity/candid": "^1.0.0",
     "@dfinity/identity": "^1.0.0",
+    "@dfinity/ledger-icp": "^4.0.0",
     "@dfinity/pic": "^0.13.1",
     "@dfinity/principal": "^1.0.0",
     "@infu/icblast": "^2.0.46",

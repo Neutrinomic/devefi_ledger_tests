@@ -2,7 +2,7 @@ import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
-import { toState, ICRCLedgerService, ICRCLedger } from './common';
+import { toState, ICRCLedgerService, ICRCLedger, Ledger, LEDGER_TYPE} from './common';
 
 
 describe('Only ledger', () => {
@@ -20,7 +20,7 @@ describe('Only ledger', () => {
       pic = await PocketIc.create(process.env.PIC_URL);
       await pic.setTime(new Date(Date.now()).getTime());
       // Ledger
-      const ledgerfixture = await ICRCLedger(pic, jo.getPrincipal(), undefined );
+      const ledgerfixture = await Ledger(pic, jo.getPrincipal() );
       ledger = ledgerfixture.actor;
       ledgerCanisterId = ledgerfixture.canisterId;
 
@@ -323,6 +323,8 @@ describe('Only ledger', () => {
         expect(result2.log_length).toBe(28n); // Only one new transaction should be added
 
       });
+
+
 
     async function passTime(n:number) {
       for (let i=0; i<n; i++) {

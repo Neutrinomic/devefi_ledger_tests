@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Passback Compare user balances to snapshot: accounts 1`] = `
+exports[`Fastscan Compare user balances to snapshot: accounts 1`] = `
 [
   "9000000100000000",
   "899999991000",

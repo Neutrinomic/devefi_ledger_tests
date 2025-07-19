@@ -2,14 +2,14 @@ import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
-import { toState, CanFastscan, FastscanService, ICRCLedgerService, ICRCLedger, BASIC_WASM_PATH, LEDGER_TYPE , basicInit, ICRCLedgerUpgrade, icrcInit, FASTSCAN_WASM_PATH, fastscanInit } from './common';
+import { toState, CanFastscan, FastscanService,LedgerUpgrade, Ledger, ICRCLedgerService, ICRCLedger, BASIC_WASM_PATH, LEDGER_TYPE , basicInit, ICRCLedgerUpgrade, icrcInit, FASTSCAN_WASM_PATH, fastscanInit } from './common';
 
 
 
 
 
 
-describe('Passback', () => {
+describe('Fastscan', () => {
   let pic: PocketIc;
   let user: Actor<FastscanService>;
   let ledger: Actor<ICRCLedgerService>;
@@ -27,7 +27,7 @@ describe('Passback', () => {
 
     pic = await PocketIc.create(process.env.PIC_URL);
     // Ledger
-    const ledgerfixture = await ICRCLedger(pic, jo.getPrincipal(), undefined);
+    const ledgerfixture = await Ledger(pic, jo.getPrincipal());
     ledger = ledgerfixture.actor;
     ledgerCanisterId = ledgerfixture.canisterId;
 
@@ -102,7 +102,10 @@ describe('Passback', () => {
     // install basic so we make many transactions
     await pic.reinstallCode({ canisterId: userCanisterId, wasm: BASIC_WASM_PATH, arg: IDL.encode(basicInit({ IDL }), [{ ledgerId: ledgerCanisterId, ledger_type: {[LEDGER_TYPE]:null}}]) });
     
-    await passTime(3);
+    await passTime(20);
+
+    const result = await user.get_balance([]);
+    expect(toState(result)).toBe("100000000")
 
     await ledger.icrc1_transfer({
       to: { owner: userCanisterId, subaccount: [] },
@@ -134,7 +137,7 @@ describe('Passback', () => {
 
     // Upgrade ledger 
     await pic.stopCanister({ canisterId: ledgerCanisterId });
-    await ICRCLedgerUpgrade(pic, jo.getPrincipal(), ledgerCanisterId, undefined);
+    await LedgerUpgrade(pic, jo.getPrincipal(), ledgerCanisterId);
     await pic.startCanister({ canisterId: ledgerCanisterId });
     await passTime(2);
  
@@ -148,7 +151,7 @@ describe('Passback', () => {
 
     // Upgrade ledger 
     await pic.stopCanister({ canisterId: ledgerCanisterId });
-    await ICRCLedgerUpgrade(pic, jo.getPrincipal(), ledgerCanisterId, undefined);
+    await LedgerUpgrade(pic, jo.getPrincipal(), ledgerCanisterId);
     await pic.startCanister({ canisterId: ledgerCanisterId });
     await pic.advanceTime(13 * 1000);
 
@@ -186,11 +189,31 @@ describe('Passback', () => {
     let transactions = real.log_length - chain_length_before;
     expect(transactions).toBe(8001n);
     let sum = accounts.reduce((acc:bigint, curr) => acc + curr[1], 0n);
+    expect(accounts.length).toBe(8001);
     let pre_sent = 1000_0000n * 10n;
+
     let transaction_fees = transactions * 10000n - 10000n;//mint transaction doesn't count;
+
+    console.log({
+      sum,
+      pre_sent,
+      transaction_fees,
+      transactions,
+      chain_length_before,
+      real,
+    })
     expect(sum).toBe(100000000_0000_0000n + pre_sent - transaction_fees);
   });
-  
+
+  it('Compare user<->ledger balances', async () => {
+    let accounts = await user.accounts();
+    let idx =0;
+    for (let [subaccount, balance] of accounts) {
+      idx++;
+      let ledger_balance = await ledger.icrc1_balance_of({owner: userCanisterId, subaccount:[subaccount]});
+      expect(toState(balance)).toBe(toState(ledger_balance));
+    } 
+  }, 190*1000);
 
   it('Compare user balances to snapshot', async () => {
     let state = accountBalancesOnlyOrdered(toState(await user.accounts()));
@@ -208,12 +231,12 @@ describe('Passback', () => {
       await pic.reinstallCode({ canisterId: userCanisterId, wasm: FASTSCAN_WASM_PATH, arg: IDL.encode(fastscanInit({ IDL }), [{ ledgerId: ledgerCanisterId, ledger_type: {[LEDGER_TYPE]:null}}]) });
 
 
-      await passTime(100);
+      await passTime(120);
       
       let accounts = accountBalancesOnlyOrdered(toState(await user.accounts()));
      
 
-      expect(accounts).toStrictEqual(accountsSnapshot);
+      expect(accountsSnapshot).toStrictEqual(accounts);
 
   });
 
@@ -238,7 +261,7 @@ describe('Passback', () => {
     await passTime(1);
     //upgrade ledger
     await pic.stopCanister({ canisterId: ledgerCanisterId });
-    await ICRCLedgerUpgrade(pic, jo.getPrincipal(), ledgerCanisterId, undefined);
+    await LedgerUpgrade(pic, jo.getPrincipal(), ledgerCanisterId);
     await pic.startCanister({ canisterId: ledgerCanisterId });
     await passTime(1);
     //upgrade canister
@@ -258,7 +281,7 @@ describe('Passback', () => {
     await passTime(100);
     let accounts = accountBalancesOnlyOrdered(toState(await user.accounts()));
 
-    expect(accounts).toStrictEqual(accountsSnapshot);
+    expect(accountsSnapshot).toStrictEqual(accounts);
 
 });
 

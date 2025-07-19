@@ -3,7 +3,7 @@ import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
-import { toState, CanBurn, BurnService, ICRCLedgerService, ICRCLedger} from './common';
+import { toState, CanBurn, BurnService, ICRCLedgerService, Ledger , registerAccount} from './common';
 
 
 
@@ -27,7 +27,7 @@ describe('Dust', () => {
 
 
         // Ledger
-        const ledgerfixture = await ICRCLedger(pic, jo.getPrincipal(), undefined );
+        const ledgerfixture = await Ledger(pic, jo.getPrincipal() );
         ledger = ledgerfixture.actor;
         ledgerCanisterId = ledgerfixture.canisterId;
 
@@ -35,6 +35,9 @@ describe('Dust', () => {
         // Ledger User
         const fixture = await CanBurn(pic, ledgerCanisterId, userCanisterId);
         user = fixture.actor;
+
+
+        registerAccount({owner: userCanisterId, subaccount:[]});
 
         await passTime(15);
 

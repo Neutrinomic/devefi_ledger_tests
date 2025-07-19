@@ -2,7 +2,7 @@ import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
-import { toState, BurnService, CanBurn, ICRCLedgerService, ICRCLedger } from './common';
+import { toState, BurnService, CanBurn, ICRCLedgerService, ICRCLedger, Ledger } from './common';
 
 
 describe('Ledger goes down', () => {
@@ -25,7 +25,7 @@ describe('Ledger goes down', () => {
 
 
         // Ledger
-        const ledgerfixture = await ICRCLedger(pic, jo.getPrincipal(), undefined );
+        const ledgerfixture = await Ledger(pic, jo.getPrincipal() );
         ledger = ledgerfixture.actor;
         ledgerCanisterId = ledgerfixture.canisterId;
 
@@ -52,6 +52,8 @@ describe('Ledger goes down', () => {
             memo: [],
             created_at_time: [],
         });
+        await passTime(1);
+
     });
     
   
@@ -61,7 +63,7 @@ describe('Ledger goes down', () => {
             {owner: bob.getPrincipal(), subaccount:[]},
             100000n
           );
-    
+
           await passTime(2);
        
 
@@ -159,10 +161,10 @@ describe('Ledger goes down', () => {
       });
 
     it(`Check if transactions have arrived 2`, async () => {
-        await passTime(20);
+        await passTime(40);
         let resp = await user.get_info();
         let errs = await user.get_errors();
-    
+        
         expect(toState(resp.pending)).toBe("0");
 
         expect(toState(resp.last_indexed_tx)).toBe("22");

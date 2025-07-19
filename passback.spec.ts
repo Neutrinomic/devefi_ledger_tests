@@ -2,7 +2,7 @@ import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
-import { toState, PassbackService, CanPassback, ICRCLedgerService, ICRCLedger } from './common';
+import { toState, PassbackService, CanPassback, ICRCLedgerService, ICRCLedger, Ledger } from './common';
 
 
 
@@ -20,7 +20,7 @@ describe('Passback', () => {
 
     pic = await PocketIc.create(process.env.PIC_URL);
     // Ledger
-    const ledgerfixture = await ICRCLedger(pic, jo.getPrincipal(), undefined);
+    const ledgerfixture = await Ledger(pic, jo.getPrincipal());
     ledger = ledgerfixture.actor;
     ledgerCanisterId = ledgerfixture.canisterId;
 

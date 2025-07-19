@@ -17,7 +17,7 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
 
 
     stable let lmem = L.Mem.Ledger.V1.new();
-    stable let lmem_icp = L2.Mem.Ledger.V1.new();
+    stable let lmem_icp = L2.Mem.Ledger.V2.new();
 
 
     let ledger = switch(ledger_type) {
@@ -26,13 +26,7 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
     };
     
     ledger.onReceive(func (t) {
-        switch(t.from) {
-            case (#icrc(from)) {
-                ignore ledger.send({ to = from; amount = t.amount; from_subaccount = t.to.subaccount; memo = null; });
-            };
-            case (_) ();
-        };
-        
+        ignore ledger.send({ to = t.from; amount = t.amount; from_subaccount = t.to.subaccount; memo = null; });
     });
 
     //---

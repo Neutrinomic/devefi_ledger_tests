@@ -19,7 +19,7 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
 
 
     stable let lmem = L.Mem.Ledger.V1.new();
-    stable let lmem_icp = L2.Mem.Ledger.V1.new();
+    stable let lmem_icp = L2.Mem.Ledger.V2.new();
 
 
     let ledger = switch(ledger_type) {
@@ -33,8 +33,14 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
     });
 
     public shared func send_to(to: LC.Account, amount: Nat) : async R<Nat64, L.SendError> {
-        ledger.send({ to = to; amount; from_subaccount = null; memo = null; });
+        ledger.send({ to = #icrc(to); amount; from_subaccount = null; memo = null; });
     };
+
+
+    public shared func send_to_icp(to: Blob, amount: Nat) : async R<Nat64, L2.SendError> {
+        ledger.send({ to = #icp(to); amount; from_subaccount = null; memo = null; });
+    };
+
     //---
 
     public query func get_balance(s: ?Blob) : async Nat {
