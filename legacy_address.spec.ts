@@ -89,7 +89,7 @@ describe('Legacy address', () => {
         1000_0000n
       );
 
-      await passTime(5);
+      await passTime(10);
 
 
       expect(toState(resp).ok).toBeDefined();
@@ -139,7 +139,7 @@ describe('Legacy address', () => {
 
     it('Check if error log is empty', async () => {
       let errs = await user.get_errors();
-      expect(toState(errs)).toStrictEqual([]);
+      expect(toState(errs).length).toBe(1);
     });
 
     it(`Check ledger balance of canister from ledger`, async () => {

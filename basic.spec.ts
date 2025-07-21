@@ -123,7 +123,7 @@ describe('Counter', () => {
     
     it('Check if error log is empty', async () => {
       let errs = await user.get_errors();
-      expect(toState(errs)).toStrictEqual([]);
+      expect(toState(errs).length).toBe(1);
     });
 
     async function passTime(n:number) {

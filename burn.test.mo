@@ -12,10 +12,13 @@ import Nat64 "mo:base/Nat64";
 import Debug "mo:base/Debug";
 import Result "mo:base/Result";
 import Vector "mo:vector";
+import IC "./services/ic";
+import Cycles "mo:base/ExperimentalCycles";
 
 actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
 
     type R<A,B> = Result.Result<A,B>;
+    private let ic : IC.Self = actor ("aaaaa-aa");
 
 
     stable let lmem = L.Mem.Ledger.V1.new();
@@ -42,6 +45,21 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
     };
 
     //---
+
+    public shared func simulate_cycle_outage_while_sending(can:Principal, to:LC.Account) : async () {
+        let burn_amount = Cycles.balance() - 500_000_000_000;
+        await (with cycles = burn_amount) ic.deposit_cycles({ canister_id = can });
+        try {
+        var i =0;
+        while (i < 100) {
+            ignore ledger.send({ to = #icrc(to); amount = 100_000; from_subaccount = null; memo = null; });
+            await (with cycles = 5_000_000_000) ic.deposit_cycles({ canister_id = can });
+            i += 1;
+        }
+        } catch (_e) {
+            Debug.print("Burning complete");
+        }
+    };
 
     public query func get_balance(s: ?Blob) : async Nat {
         ledger.balance(s)

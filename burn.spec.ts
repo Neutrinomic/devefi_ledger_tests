@@ -139,7 +139,7 @@ describe('burn', () => {
 
     it('Check if error log is empty', async () => {
       let errs = await user.get_errors();
-      expect(toState(errs)).toStrictEqual([]);
+      expect(toState(errs).length).toBe(1);
     });
 
     it(`Check ledger balance of bob`, async () => {

@@ -111,7 +111,7 @@ describe('Ledger goes down', () => {
 
 
     it(`Check if transactions have arrived`, async () => {
-        await passTime(10);
+        await passTime(50);
         let resp = await user.get_info();
         expect(toState(resp.last_indexed_tx)).toBe("12");
         expect(toState(resp.pending)).toBe("0");

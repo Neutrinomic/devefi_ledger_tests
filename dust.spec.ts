@@ -116,16 +116,20 @@ describe('Dust', () => {
     });
 
     it(`Transfer dust (fee + 1) from canister to Bob`, async () => {
+        let resp0 = await user.get_info();
+
+        expect(toState(resp0.last_indexed_tx)).toBe("1");
+
         let resp = await user.send_to(
             {owner: bob.getPrincipal(), subaccount:[]},
             10001n
           );
     
-          await passTime(2);
-          // <= fee should be ignored
+          await passTime(5);
      
 
           let resp2 = await user.get_info();
+          expect(resp2.pending).toBe(0n);
           expect(toState(resp2.last_indexed_tx)).toBe("2"); // this should pass
 
           let resp3 = await ledger.get_transactions({start: 0n, length: 100n});
