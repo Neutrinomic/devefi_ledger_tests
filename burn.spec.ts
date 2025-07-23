@@ -149,6 +149,46 @@ describe('burn', () => {
     });
 
 
+    it(`Send tx with memo`, async () => {
+      let resp = await user.send_to_with_memo(
+        {owner: bob.getPrincipal(), subaccount:[]},
+        101_0000n,
+        [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]]
+      );
+      await passTime(5);
+    });
+
+    it('Check if it went through', async () => {
+      let errs = await user.get_errors();
+      expect(toState(errs).length).toBe(1);
+
+      let resp2 = await user.get_info();
+      expect(resp2.pending).toBe(0n);
+
+      let resp3 = await ledger.icrc1_balance_of({owner: bob.getPrincipal(), subaccount:[]});
+      expect(resp3).toBe(1_0000_0000n - 10000n + 100_0000n);
+    });
+
+    it(`Send tx with memo - shorter`, async () => {
+      let resp = await user.send_to_with_memo(
+        {owner: bob.getPrincipal(), subaccount:[]},
+        101_0000n,
+        [[6, 2, 3, 4, 5 ,6 ,7, 8]]
+      );
+      await passTime(5);
+    });
+
+    it('Check if it went through', async () => {
+      let errs = await user.get_errors();
+      expect(toState(errs).length).toBe(1);
+
+      let resp2 = await user.get_info();
+      expect(resp2.pending).toBe(0n);
+
+      let resp3 = await ledger.icrc1_balance_of({owner: bob.getPrincipal(), subaccount:[]});
+      expect(resp3).toBe(1_0000_0000n - 10000n + 200_0000n);
+    });
+
     async function passTime(n:number) {
       for (let i=0; i<n; i++) {
         await pic.advanceTime(3*1000);

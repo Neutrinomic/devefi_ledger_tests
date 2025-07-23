@@ -77,7 +77,13 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
     
     //---
 
+    public query func get_pending_transactions() : async [L.TransactionShared] {
+        ledger.getPendingTransactions();
+    };
 
+    public shared func clear_pending_transactions() : async () {
+        ledger.sender.clearPendingTransactions();
+    };
 
     public query func get_balance(s: ?Blob) : async Nat {
         ledger.balance(s)

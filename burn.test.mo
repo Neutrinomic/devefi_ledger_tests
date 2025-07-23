@@ -44,7 +44,18 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
         ledger.send({ to = #icp(to); amount; from_subaccount = null; memo = null; });
     };
 
+    public shared func send_to_with_memo(to: LC.Account, amount: Nat, memo: ?Blob) : async R<Nat64, L.SendError> {
+        ledger.send({ to = #icrc(to); amount; from_subaccount = null; memo = memo; });
+    };
+
     //---
+    public query func get_pending_transactions() : async [L.TransactionShared] {
+        ledger.getPendingTransactions();
+    };
+
+    public shared func clear_pending_transactions() : async () {
+        ledger.sender.clearPendingTransactions();
+    };
 
     public shared func simulate_cycle_outage_while_sending(can:Principal, to:LC.Account) : async () {
         let burn_amount = Cycles.balance() - 500_000_000_000;
