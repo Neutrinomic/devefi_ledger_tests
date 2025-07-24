@@ -27,5 +27,7 @@ find . -maxdepth 1 -name '*.test.mo' | parallel '
   echo "Finished processing $base_name"
 '
 
+./build_ntc.sh
+
 # Note: GNU Parallel executes each job in a separate shell instance,
 # so you might need to ensure that all necessary environment variables are exported or defined within the parallel command block.

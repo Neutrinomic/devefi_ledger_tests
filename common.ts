@@ -1,6 +1,6 @@
 import { Principal } from '@dfinity/principal';
 import { resolve } from 'node:path';
-import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
+import { Actor, PocketIc, createIdentity} from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 import { _SERVICE as BasicService, idlFactory as BasicIdlFactory, init as basicInit } from './build/basic.idl.js';
 import { _SERVICE as BurnService, idlFactory as BurnIdlFactory, init as burnInit } from './build/burn.idl.js';
@@ -8,6 +8,8 @@ import { _SERVICE as FastscanService, idlFactory as FastscanIdlFactory, init as 
 import { _SERVICE as PassbackService, idlFactory as PassbackIdlFactory, init as passbackInit } from './build/passback.idl.js';
 import { _SERVICE as ICRCLedgerService, idlFactory as ICRCLedgerIdlFactory, init as icrcInit, LedgerArg as ICRCLedgerArg, GetTransactionsRequest, GetTransactionsResponse, Transaction as ICRCTransaction, Account } from './icrc_ledger/ledger.idl.js';
 import { _SERVICE as ICPLedgerService, idlFactory as ICPLedgerIdlFactory, init as icpInit, LedgerCanisterPayload as ICPLedgerCanisterPayload, QueryBlocksResponse, Block as ICPBlock, Transaction as ICPTransaction } from './icp_ledger/ledger.idl';
+import { _SERVICE as CycleWalletService, idlFactory as CycleWalletIdlFactory, init as cycleWalletInit } from './build/cycle_wallet.idl.js';
+import { _SERVICE as NTCService, idlFactory as NTCIdlFactory, init as ntcInit } from './build/NTC.idl.js';
 //@ts-ignore
 import {toState} from "@infu/icblast";
 import { AccountIdentifier, SubAccount } from '@dfinity/ledger-icp';
@@ -17,10 +19,37 @@ export const BASIC_WASM_PATH = resolve(__dirname, "./build/basic.wasm");
 export const BURN_WASM_PATH = resolve(__dirname, "./build/burn.wasm");
 export const FASTSCAN_WASM_PATH = resolve(__dirname, "./build/fastscan.wasm");
 export const PASSBACK_WASM_PATH = resolve(__dirname, "./build/passback.wasm");
-
+export const NTC_WASM_PATH = resolve(__dirname, "./build/NTC.wasm");
+export const CYCLE_WALLET_WASM_PATH = resolve(__dirname, "./build/cycle_wallet.wasm");
 export const LEDGER_TYPE = process.env['LEDGER_TYPE'] as "icrc" | "icp";
 
 export {toState};
+
+export async function CanNTC(pic:PocketIc, targetCanisterId:Principal, ledgerCanisterId:Principal) {
+    const fixture = await pic.setupCanister<NTCService>({
+        targetCanisterId,
+        idlFactory: NTCIdlFactory,
+        wasm: NTC_WASM_PATH,
+        arg: IDL.encode(ntcInit({ IDL }), [{ledgerId: ledgerCanisterId}]),
+    });
+
+    return fixture;
+};
+
+export {NTCService, NTCIdlFactory, ntcInit};
+
+export async function CanCycleWallet(pic:PocketIc) {
+    const fixture = await pic.setupCanister<CycleWalletService>({
+        idlFactory: CycleWalletIdlFactory,
+        wasm: CYCLE_WALLET_WASM_PATH,
+        arg: IDL.encode(cycleWalletInit({ IDL }), []),
+    });
+
+    return fixture;
+};
+
+export {CycleWalletService, CycleWalletIdlFactory, cycleWalletInit};
+
 
 export async function CanBasic(pic:PocketIc, ledgerCanisterId:Principal) {
     
@@ -117,6 +146,9 @@ function get_args(me:Principal) {
     return ledger_args;
     }
 
+
+
+    
 export async function ICRCLedger(pic: PocketIc, me:Principal, subnet:Principal | undefined) {
 
     const fixture = await pic.setupCanister<ICRCLedgerService>({

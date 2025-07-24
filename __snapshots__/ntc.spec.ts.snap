@@ -1,0 +1,126 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NTC Burn NTC 1`] = `
+[
+  {
+    "owner": {
+      "__principal__": "7ew52-sqaaa-aaaal-qsrda-cai",
+    },
+    "subaccount": [
+      Uint8Array [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        255,
+        255,
+        255,
+        255,
+        255,
+        224,
+        0,
+        1,
+        1,
+        1,
+        10,
+      ],
+    ],
+  },
+  "7ew52-sqaaa-aaaal-qsrda-cai-jb4bgmy.ffffffffffe0000101010a",
+  {
+    "__principal__": "lqy7q-dh777-77777-aaaaq-cai",
+  },
+]
+`;
+
+exports[`NTC Make a lot of burn requests 1`] = `
+[
+  {
+    "owner": {
+      "__principal__": "7ew52-sqaaa-aaaal-qsrda-cai",
+    },
+    "subaccount": [
+      Uint8Array [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        255,
+        255,
+        255,
+        255,
+        255,
+        224,
+        0,
+        1,
+        1,
+        1,
+        10,
+      ],
+    ],
+  },
+  "7ew52-sqaaa-aaaal-qsrda-cai-jb4bgmy.ffffffffffe0000101010a",
+  {
+    "__principal__": "lqy7q-dh777-77777-aaaaq-cai",
+  },
+]
+`;
+
+exports[`NTC Mint NTC 1`] = `
+{
+  "approve": [],
+  "burn": [],
+  "kind": "mint",
+  "mint": [
+    {
+      "amount": "99990000",
+      "created_at_time": [
+        "1620328720000000100",
+      ],
+      "memo": [
+        "000000000000000000000000000000000000000000ffffffffffe0000101010a",
+      ],
+      "to": {
+        "owner": "ydl4r-asr5o-7axs3-tshas-4xugy-bvg4x-ixnjd-6qex3-guw6d-5pahc-oqe",
+        "subaccount": [],
+      },
+    },
+  ],
+  "timestamp": "1620328723000000300",
+  "transfer": [],
+}
+`;
