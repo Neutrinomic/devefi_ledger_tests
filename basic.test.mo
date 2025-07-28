@@ -39,13 +39,13 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
     stable let lmem_icp = L2.Mem.Ledger.V2.new();
 
 
-    let ledger = switch(ledger_type) {
+    transient let ledger = switch(ledger_type) {
         case (#icrc) L.Ledger<system>(lmem, Principal.toText(ledgerId), #id(0), Principal.fromActor(this));
         case (#icp) L2.Ledger<system>(lmem_icp, Principal.toText(ledgerId), #id(0), Principal.fromActor(this));
     };
 
-
-    ledger.onReceive(func (t) {
+    
+    ledger.onReceive(func <system>(t:L.Transfer) :() {
 
         if (t.to.subaccount == null) {
             // we will split into 1,000 subaccounts

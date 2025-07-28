@@ -10,6 +10,8 @@ import { _SERVICE as ICRCLedgerService, idlFactory as ICRCLedgerIdlFactory, init
 import { _SERVICE as ICPLedgerService, idlFactory as ICPLedgerIdlFactory, init as icpInit, LedgerCanisterPayload as ICPLedgerCanisterPayload, QueryBlocksResponse, Block as ICPBlock, Transaction as ICPTransaction } from './icp_ledger/ledger.idl';
 import { _SERVICE as CycleWalletService, idlFactory as CycleWalletIdlFactory, init as cycleWalletInit } from './build/cycle_wallet.idl.js';
 import { _SERVICE as NTCService, idlFactory as NTCIdlFactory, init as ntcInit } from './build/NTC.idl.js';
+import { _SERVICE as NTCCHAT_SERVICE, idlFactory as NTCCHAT_IDL_FACTORY, init as ntcchat_init } from './build/ntcchat.idl.js';
+
 //@ts-ignore
 import {toState} from "@infu/icblast";
 import { AccountIdentifier, SubAccount } from '@dfinity/ledger-icp';
@@ -21,9 +23,24 @@ export const FASTSCAN_WASM_PATH = resolve(__dirname, "./build/fastscan.wasm");
 export const PASSBACK_WASM_PATH = resolve(__dirname, "./build/passback.wasm");
 export const NTC_WASM_PATH = resolve(__dirname, "./build/NTC.wasm");
 export const CYCLE_WALLET_WASM_PATH = resolve(__dirname, "./build/cycle_wallet.wasm");
+export const NTCCHAT_WASM_PATH = resolve(__dirname, "./build/ntcchat.wasm");
 export const LEDGER_TYPE = process.env['LEDGER_TYPE'] as "icrc" | "icp";
 
 export {toState};
+
+export async function CanNTCCHAT(pic:PocketIc) {
+    const fixture = await pic.setupCanister<NTCCHAT_SERVICE>({
+        idlFactory: NTCCHAT_IDL_FACTORY,
+        wasm: NTCCHAT_WASM_PATH,
+        arg: IDL.encode(ntcchat_init({ IDL }), []),
+    });
+
+    return fixture;
+}
+
+
+
+export {NTCCHAT_SERVICE, NTCCHAT_IDL_FACTORY, ntcchat_init};
 
 export async function CanNTC(pic:PocketIc, targetCanisterId:Principal, ledgerCanisterId:Principal) {
     const fixture = await pic.setupCanister<NTCService>({

@@ -3,7 +3,7 @@ import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
-  import { toState, CanBasic, CanNTC, NTCService, ICRCLedger, ICRCLedgerService, Ledger, realICPLedger, ICPLedgerService, CycleWalletService, CanCycleWallet} from './common';
+  import { toState, CanNTCCHAT,NTCCHAT_SERVICE, CanBasic, CanNTC, NTCService, ICRCLedger, ICRCLedgerService, Ledger, realICPLedger, ICPLedgerService, CycleWalletService, CanCycleWallet} from './common';
 
 
 const T = 1_000_000_000_000n;
@@ -18,6 +18,8 @@ describe('NTC', () => {
     let minterCanisterId: Principal;
     let cycleWallet: Actor<CycleWalletService>;
     let cycleWalletCanisterId: Principal;
+    let ntcchat: Actor<NTCCHAT_SERVICE>;
+    let ntcchatCanisterId: Principal;
 
     const jo = createIdentity('superSecretAlicePassword');
     const bob = createIdentity('superSecretBobPassword');
@@ -42,7 +44,10 @@ describe('NTC', () => {
       cycleWallet = cycleWalletfixture.actor;
       cycleWalletCanisterId = cycleWalletfixture.canisterId;
 
-      
+      const ntcchatfixture = await CanNTCCHAT(pic);
+      ntcchat = ntcchatfixture.actor;
+      ntcchatCanisterId = ntcchatfixture.canisterId;
+
       // ledger.setPrincipal(jo.getPrincipal());
       await passTime(30);
 
@@ -172,9 +177,9 @@ it(`Burn NTC`, async () => {
 
   let wallet_balance_after = await cycleWallet.getCyclesBalance();
 
-  expect(wallet_balance_after/T).toBe((wallet_balance + 10n*T - T/10n)/T);
+  expect(wallet_balance_after/T).toBe((wallet_balance + 10n*T - T/200n)/T);
 
-  expect(wallet_balance_after/T).toBe(899n + 9n);
+  expect(wallet_balance_after/T).toBe(899n + 10n);
 });
 
 
@@ -185,7 +190,7 @@ it(`Make a lot of burn requests`, async () => {
   
   let wallet_balance = await cycleWallet.getCyclesBalance();
 
-  expect(wallet_balance/T).toBe(808n);
+  expect(wallet_balance/T).toBe(809n);
 
   let topup_account_resp = await minter.get_account( cycleWalletCanisterId);
   let topup_account = topup_account_resp[0];
@@ -209,12 +214,12 @@ it(`Make a lot of burn requests`, async () => {
   };
 
   
-  await passTime(40);
+  await passTime(60);
 
   let wallet_balance_after = await cycleWallet.getCyclesBalance();
-  let one_fill = 1n*T - T/10n;
+  let one_fill = 1n*T - T/200n;
   expect(wallet_balance_after/T).toBe((wallet_balance + one_fill*100n)/T);
-expect((wallet_balance + one_fill*100n)/T).toBe(808n + 90n);
+  expect((wallet_balance + one_fill*100n)/T).toBe(808n + 100n);
 
 });
 
@@ -223,7 +228,7 @@ it(`Check stats for burned and failed topups`, async () => {
   let stats = await minter.stats();
   expect(stats.failed_topups).toBe(0n);
   expect(stats.cycles/T).toBeGreaterThan(1000000n);
-  expect(stats.topped_up/T).toBe(99n);
+  expect(stats.topped_up/T).toBe(109n);
   
 
 });
@@ -232,6 +237,9 @@ it(`Check stats for burned and failed topups`, async () => {
 it(`Check if minter queue is empty and all is sent`, async () => {
   let queue = await minter.get_queue();
   expect(queue.length).toBe(0);
+
+  let dropped = await minter.get_dropped();
+  expect(dropped.length).toBe(0);
 });
 
 
@@ -239,6 +247,9 @@ it(`Send to non existing canister`, async () => {
   let topup_account_resp = await minter.get_account(Principal.fromText("togwv-zqaaa-aaaal-qr7aa-cai"));
   let topup_account = topup_account_resp[0];
   let topup_account_text = topup_account_resp[1];
+
+
+  console.log("\n\n Before transfer\n\n");
 
   let resp = await ledger.icrc1_transfer({
     to: topup_account,
@@ -251,30 +262,69 @@ it(`Send to non existing canister`, async () => {
 
   expect(toState(resp).Err).not.toBeDefined();
   await passTime(10);
+
+  let stats_after = await minter.stats();
+  expect(stats_after.topped_up/T).toBe(109n); // Make sure it didn't top up
+
   let queue = await minter.get_queue();
+  let dropped = await minter.get_dropped();
   expect(queue.length).toBe(1);
+
+  expect(dropped.length).toBe(0);
 
 });
 
 it(`Wait for it to fail`, async () => {
   
   let stats_before = await minter.stats();
-  expect(stats_before.topped_up/T).toBe(99n);
-  expect(stats_before.cycles/T).toBe(1000101n);
+  expect(stats_before.topped_up/T).toBe(109n);
+  expect(stats_before.cycles/T).toBe(1000091n);
   expect(stats_before.failed_topups).toBe(0n);
   for (let i=0; i<100; i++) {
-    await pic.advanceTime(60*1000);
+    await pic.advanceTime(30*1000);
     await pic.tick(1);
   }
   
   let queue = await minter.get_queue();
   expect(queue.length).toBe(0);
 
+  let dropped = await minter.get_dropped();
+  expect(dropped.length).toBe(1);
+
   let stats = await minter.stats();
-  expect(stats.topped_up/T).toBe(99n);
-  expect(stats.cycles/T).toBe(1000101n);
+  expect(stats.topped_up/T).toBe(109n);
+  expect(stats.cycles/T).toBe(1000091n);
   expect(stats.failed_topups/T).toBe(9n);
 
+});
+
+// Text encoded as Uint8Array
+let msg = new TextEncoder().encode("Hello, world! Chatting over NTC!");
+
+it(`Send transaction message to ntc chat`, async () => {
+
+  let accresp = await minter.get_account( ntcchatCanisterId);
+  let chat_account = accresp[3];
+
+  let resp = await ledger.icrc1_transfer({
+    to: chat_account,
+    from_subaccount: [],
+    amount: 1n * NT,
+    fee: [],
+    memo: [msg],
+    created_at_time: [],
+  });
+
+  await passTime(5);
+});
+
+
+it(`Check ntc chat`, async () => {
+  let chat = await ntcchat.get_chat();
+  expect(chat.length).toBe(1);
+  expect(chat[0][0].owner.toText()).toBe(bob.getPrincipal().toText());
+  expect(chat[0][1]).toEqual(msg);
+  expect(chat[0][2]).toBe(1n*T - 500000n * 1_00_00n);
 });
 
 

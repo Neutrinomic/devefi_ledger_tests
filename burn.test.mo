@@ -18,19 +18,19 @@ import Cycles "mo:base/ExperimentalCycles";
 actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
 
     type R<A,B> = Result.Result<A,B>;
-    private let ic : IC.Self = actor ("aaaaa-aa");
+    private transient let ic : IC.Self = actor ("aaaaa-aa");
 
 
     stable let lmem = L.Mem.Ledger.V1.new();
     stable let lmem_icp = L2.Mem.Ledger.V2.new();
 
 
-    let ledger = switch(ledger_type) {
+    transient let ledger = switch(ledger_type) {
         case (#icrc) L.Ledger<system>(lmem, Principal.toText(ledgerId), #id(0), Principal.fromActor(this));
         case (#icp) L2.Ledger<system>(lmem_icp, Principal.toText(ledgerId), #id(0), Principal.fromActor(this));
     };
 
-    var sent_txs = Vector.new<(Nat64,Nat)>();
+    transient var sent_txs = Vector.new<(Nat64,Nat)>();
     ledger.onSent(func(idx, block_id) {
         Vector.add(sent_txs, (idx, block_id));
     });

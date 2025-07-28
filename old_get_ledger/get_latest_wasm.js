@@ -9,7 +9,7 @@ let upgradesteps = await snsw.list_upgrade_steps({limit:500});
 
 let last_ledger_hash = upgradesteps.steps[upgradesteps.steps.length-1].pretty_version.ledger_wasm_hash;
 
-console.log(last_ledger_hash);
+// console.log(last_ledger_hash);
 
 let wasm = await snsw.get_wasm({hash:last_ledger_hash});
 

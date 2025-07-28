@@ -125,7 +125,7 @@ describe('burn', () => {
       await passTime(10);
   
 
-      await passTime(50);
+      await passTime(100);
 
 
     }, 600*1000);
