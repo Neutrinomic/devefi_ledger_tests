@@ -144,7 +144,7 @@ describe('Dust', () => {
             10001n
           );
     
-          await passTime(2);
+          await passTime(4);
           // <= fee should be ignored
      
 

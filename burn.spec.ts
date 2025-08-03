@@ -139,7 +139,7 @@ describe('burn', () => {
 
     it('Check if error log is empty', async () => {
       let errs = await user.get_errors();
-      expect(toState(errs).length).toBe(1);
+      expect(toState(errs).length).toBe(0);
     });
 
     it(`Check ledger balance of bob`, async () => {
@@ -160,7 +160,7 @@ describe('burn', () => {
 
     it('Check if it went through', async () => {
       let errs = await user.get_errors();
-      expect(toState(errs).length).toBe(1);
+      expect(toState(errs).length).toBe(0);
 
       let resp2 = await user.get_info();
       expect(resp2.pending).toBe(0n);
@@ -180,7 +180,7 @@ describe('burn', () => {
 
     it('Check if it went through', async () => {
       let errs = await user.get_errors();
-      expect(toState(errs).length).toBe(1);
+      expect(toState(errs).length).toBe(0);
 
       let resp2 = await user.get_info();
       expect(resp2.pending).toBe(0n);

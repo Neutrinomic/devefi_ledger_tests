@@ -16,7 +16,7 @@ import Debug "mo:base/Debug";
 actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
 
     Debug.print("fastscan.test.mo");
-    stable let lmem = L.Mem.Ledger.V1.new();
+    stable let lmem = L.Mem.Ledger.V2.new();
     stable let lmem_icp = L2.Mem.Ledger.V2.new();
 
     private func ENat64(value : Nat64) : [Nat8] {
@@ -39,7 +39,12 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
     
 
     transient let ledger = switch(ledger_type) {
-        case (#icrc) L.Ledger<system>(lmem, Principal.toText(ledgerId), #id(0), Principal.fromActor(this));
+        case (#icrc) L.Ledger<system>(lmem, {
+            LEDGER_ID = ledgerId;
+            ME_CAN = Principal.fromActor(this);
+            START_FROM_BLOCK = #id(0);
+            CYCLE_RECURRING_TIME_SEC = 2;
+        });
         case (#icp) L2.Ledger<system>(lmem_icp, Principal.toText(ledgerId), #id(0), Principal.fromActor(this));
     };
     

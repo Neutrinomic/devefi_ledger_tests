@@ -64,7 +64,7 @@ describe('Ledger goes down', () => {
             100000n
           );
 
-          await passTime(2);
+          await passTime(4);
        
 
           let resp2 = await user.get_info();
@@ -94,7 +94,7 @@ describe('Ledger goes down', () => {
                 100000n
             );
         };
-        await passTime(1);
+        await passTime(4);
         let resp2 = await user.get_info();
         
         expect(toState(resp2.pending)).toBe("10");

@@ -62,7 +62,7 @@ describe('Mint', () => {
             1_0000_0000n
           );
     
-          await passTime(2);
+          await passTime(3);
     
           expect(toState(resp).ok).toBeDefined();
     });
@@ -130,7 +130,7 @@ describe('Mint', () => {
             10001n
           );
     
-          await passTime(2);
+          await passTime(4);
           // <= fee should be ignored
      
 

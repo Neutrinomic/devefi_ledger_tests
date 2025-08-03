@@ -155,8 +155,8 @@ it(`Burn NTC`, async () => {
   expect(wallet_balance/T).toBe(899n);
 
   let topup_account_resp = await minter.get_account( cycleWalletCanisterId);
-  let topup_account = topup_account_resp[0];
-  let topup_account_text = topup_account_resp[1];
+  let topup_account = topup_account_resp.refill;
+  let topup_account_text = topup_account_resp.refill_text;
 
   expect(topup_account_resp).toMatchSnapshot();
   
@@ -193,8 +193,8 @@ it(`Make a lot of burn requests`, async () => {
   expect(wallet_balance/T).toBe(809n);
 
   let topup_account_resp = await minter.get_account( cycleWalletCanisterId);
-  let topup_account = topup_account_resp[0];
-  let topup_account_text = topup_account_resp[1];
+  let topup_account = topup_account_resp.refill;
+  let topup_account_text = topup_account_resp.refill_text;
 
   expect(topup_account_resp).toMatchSnapshot();
   
@@ -245,8 +245,8 @@ it(`Check if minter queue is empty and all is sent`, async () => {
 
 it(`Send to non existing canister`, async () => {
   let topup_account_resp = await minter.get_account(Principal.fromText("togwv-zqaaa-aaaal-qr7aa-cai"));
-  let topup_account = topup_account_resp[0];
-  let topup_account_text = topup_account_resp[1];
+  let topup_account = topup_account_resp.refill;
+  let topup_account_text = topup_account_resp.refill_text;
 
 
   console.log("\n\n Before transfer\n\n");
@@ -299,12 +299,12 @@ it(`Wait for it to fail`, async () => {
 });
 
 // Text encoded as Uint8Array
-let msg = new TextEncoder().encode("Hello, world! Chatting over NTC!");
+let msg = new TextEncoder().encode("Hello, world! Chatting over NTC! It's your birhtday!");
 
 it(`Send transaction message to ntc chat`, async () => {
 
   let accresp = await minter.get_account( ntcchatCanisterId);
-  let chat_account = accresp[3];
+  let chat_account = accresp.call;
 
   let resp = await ledger.icrc1_transfer({
     to: chat_account,

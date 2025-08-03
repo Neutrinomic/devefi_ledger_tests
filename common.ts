@@ -154,7 +154,7 @@ function get_args(me:Principal) {
             },
             maximum_number_of_accounts: [],
             accounts_overflow_trim_quantity: [],
-            max_memo_length: [],
+            max_memo_length: [80],
             feature_flags: [{ icrc2: true }],            
         },
     };

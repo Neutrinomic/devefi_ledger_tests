@@ -65,7 +65,7 @@ describe('OnSent', () => {
         1_0000_0000n
       );
 
-      await passTime(1);
+      await passTime(3);
       expect(toState(resp).ok).toBeDefined();
     });
     
@@ -83,7 +83,7 @@ describe('OnSent', () => {
         {owner: bob.getPrincipal(), subaccount:[]},
         1_0000_0000n
       );
-      await passTime(1);
+      await passTime(3);
       expect(toState(resp2).ok).toBeDefined();
       expect(toState(resp3).ok).toBeDefined();
     });
@@ -117,7 +117,7 @@ describe('OnSent', () => {
         {owner: bob.getPrincipal(), subaccount:[]},
         1_0000_0000n
       );
-      await passTime(1);
+      await passTime(3);
       expect(toState(resp2).ok).toBeDefined();
       expect(toState(resp3).ok).toBeDefined();
     });
