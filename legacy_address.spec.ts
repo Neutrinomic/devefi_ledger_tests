@@ -139,7 +139,7 @@ describe('Legacy address', () => {
 
     it('Check if error log is empty', async () => {
       let errs = await user.get_errors();
-      expect(toState(errs).length).toBe(1);
+      expect(toState(errs).length).toBe(0);
     });
 
     it(`Check ledger balance of canister from ledger`, async () => {

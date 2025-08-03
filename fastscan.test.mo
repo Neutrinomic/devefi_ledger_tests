@@ -45,7 +45,12 @@ actor class({ledgerId: Principal; ledger_type:{#icrc;#icp}}) = this {
             START_FROM_BLOCK = #id(0);
             CYCLE_RECURRING_TIME_SEC = 2;
         });
-        case (#icp) L2.Ledger<system>(lmem_icp, Principal.toText(ledgerId), #id(0), Principal.fromActor(this));
+        case (#icp) L2.Ledger<system>(lmem_icp, {
+            LEDGER_ID = ledgerId;
+            ME_CAN = Principal.fromActor(this);
+            START_FROM_BLOCK = #id(0);
+            CYCLE_RECURRING_TIME_SEC = 2;
+        });
     };
     
     ledger.onReceive(func <system>(t:L.Transfer) :() {
